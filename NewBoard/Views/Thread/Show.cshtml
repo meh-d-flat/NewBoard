@@ -1,0 +1,16 @@
+﻿@model NewBoard.Models.Thread
+@{
+    ViewBag.Title = "Show";
+}
+
+<h2>Show</h2>
+@{
+    foreach (var post in Model.Posts)
+    {
+        <div id="post">
+            <h6>@post.Timestamp @post.PostId</h6>
+            <br />
+            <text>@post.Message</text>
+        </div>
+    }
+}
