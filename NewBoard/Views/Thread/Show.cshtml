@@ -1,16 +1,28 @@
-﻿@model NewBoard.Models.Thread
+﻿@model NewBoard.ViewModels.PostThreadViewModel
 @{
     ViewBag.Title = "Show";
 }
 
 <h2>Show</h2>
+@using (Html.BeginForm("Post", "Thread"))
+{
+    <div class="form-group">
+        @Html.Label("Your Message")
+        @Html.TextBoxFor(m => m.Post.Message, new { @class = "form-control" })
+    </div>
+    @Html.HiddenFor(m => m.Thread)
+    @Html.HiddenFor(m => m.ThreadId)
+
+    <button type="submit" class="btn btn-primary">Send</button>
+}
+
 @{
-    foreach (var post in Model.Posts)
+    foreach (var post in Model.Thread.Posts)
     {
-        <div id="post">
+        <div id="post" class="alert alert-warning">
             <h6>@post.Timestamp @post.PostId</h6>
-            <br />
             <text>@post.Message</text>
+            <br>
         </div>
     }
 }

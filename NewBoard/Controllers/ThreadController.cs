@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
+using NewBoard.ViewModels;
 
 namespace NewBoard.Controllers
 {
@@ -26,8 +27,37 @@ namespace NewBoard.Controllers
 
         public ActionResult Show(int id)
         {
-            var thread = _context.Threads.Include(t => t.Posts).FirstOrDefault(t => t.ThreadId == id);
-            return View(thread);
+            var thread = _context.Threads
+                .Include(t => t.Posts)
+                .FirstOrDefault(t => t.ThreadId == id);
+
+            var viewModel = new PostThreadViewModel
+            {
+                ThreadId = id,
+                Thread = thread
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Post(PostThreadViewModel postThreadViewModel)
+        {
+            if (postThreadViewModel.Post.PostId == 0)
+            {
+                var thread = _context.Threads
+                    .Include(t => t.Posts)
+                    .FirstOrDefault(t => t.ThreadId == postThreadViewModel.ThreadId);
+
+                postThreadViewModel.Post.Thread = thread;
+                postThreadViewModel.Post.Timestamp = DateTime.Now;
+
+                _context.Posts.Add(postThreadViewModel.Post);
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Show", new { id = postThreadViewModel.ThreadId });
         }
     }
 }
