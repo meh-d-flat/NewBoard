@@ -1,0 +1,24 @@
+﻿@model List<NewBoard.Models.Thread>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Thread</th>
+            <th style="text-align: right"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var thread in Model)
+        {
+                <tr>
+                    <td>@Html.ActionLink(thread.GetOp().Message, "Show", "Thread", new { id = thread.ThreadId }, null)</td>
+                    <td style="text-align: right">Created: @thread.GetOp().Timestamp.ToString("yyyy-MM-dd HH:mm:ss") Posts: @thread.PostsNumber()</td>
+                </tr>
+            }
+    </tbody>
+</table>

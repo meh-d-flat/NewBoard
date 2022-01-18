@@ -6,11 +6,13 @@
 <h2>Show</h2>
 @using (Html.BeginForm("Post", "Thread"))
 {
+    @Html.ValidationSummary(true, "Please fix the errors")
     <div class="form-group">
         @Html.Label("Your Message")
-        @Html.TextBoxFor(m => m.Post.Message, new { @class = "form-control" })
+        @Html.TextAreaFor(m => m.Post.Message, new { @class = "form-control", @style = "min-width: 66%" })
+        @Html.ValidationMessageFor(m => m.Post.Message)
     </div>
-    @Html.HiddenFor(m => m.Thread)
+    //@Html.HiddenFor(m => m.Thread, new { Model.Thread })
     @Html.HiddenFor(m => m.ThreadId)
 
     <button type="submit" class="btn btn-primary">Send</button>
@@ -19,10 +21,14 @@
 @{
     foreach (var post in Model.Thread.Posts)
     {
-        <div id="post" class="alert alert-warning">
-            <h6>@post.Timestamp @post.PostId</h6>
-            <text>@post.Message</text>
-            <br>
-        </div>
+    <div id="post" class="alert alert-warning">
+        <h6>@post.Timestamp.ToString("yyyy-MM-dd HH:mm:ss") №@post.PostId</h6>
+        @(new HtmlString(post.Message))
+    </div>
     }
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundle/jqueryval")    
 }

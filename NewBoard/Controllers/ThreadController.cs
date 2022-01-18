@@ -18,11 +18,9 @@ namespace NewBoard.Controllers
             _context = new ApplicationDbContext();
         }
 
-        // GET: Thread
         public ActionResult Index()
         {
-            
-            return View();
+            return View(_context.Threads.ToList());
         }
 
         public ActionResult Show(int id)
@@ -41,23 +39,29 @@ namespace NewBoard.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(PostThreadViewModel postThreadViewModel)
+        public ActionResult Post(PostThreadViewModel viewModel)
         {
-            if (postThreadViewModel.Post.PostId == 0)
+            if (!ModelState.IsValid)
+                return RedirectToAction("Show", new { id = viewModel.ThreadId });
+
+            var thread = _context.Threads
+                .Include(t => t.Posts)
+                .FirstOrDefault(t => t.ThreadId == viewModel.ThreadId);
+
+            var post = new Post
             {
-                var thread = _context.Threads
-                    .Include(t => t.Posts)
-                    .FirstOrDefault(t => t.ThreadId == postThreadViewModel.ThreadId);
+                Message = viewModel.Post.Message
+                    .Replace(Environment.NewLine, "<br>")
+                    .Replace("\r\n", "<br>"),
+                Thread = thread,
+                Timestamp = DateTime.Now
+            };
 
-                postThreadViewModel.Post.Thread = thread;
-                postThreadViewModel.Post.Timestamp = DateTime.Now;
-
-                _context.Posts.Add(postThreadViewModel.Post);
-            }
-
+            _context.Posts.Add(post);
             _context.SaveChanges();
-
-            return RedirectToAction("Show", new { id = postThreadViewModel.ThreadId });
+            //var m = post.PostId;
+            //var newThread = new Thread { ThreadId = post.PostId, Catalog = new Catalog() };
+            return RedirectToAction("Show", new { id = viewModel.ThreadId });
         }
     }
 }
